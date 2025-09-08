@@ -1,0 +1,2344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>体职连线 - 小程序</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1E88E5;
+            --secondary: #4CAF50;
+            --accent: #FF9800;
+            --dark: #333333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+		a {
+			text-decoration: none;
+			color: inherit;
+		}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 80px;
+            padding-top: 50px;
+            overflow-x: hidden;
+        }
+        
+        /* 页面容器 */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 顶部导航 */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-right: 15px;
+        }
+        
+        .location i {
+            margin-right: 5px;
+        }
+        
+        .search-bar {
+            flex: 1;
+            background: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-bar i {
+            color: var(--gray);
+            margin-right: 8px;
+        }
+        
+        .search-bar input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-size: 16px;
+        }
+        
+        /* 更新Banner区域为轮播图样式 */
+        .banner {
+            padding: 15px;
+            position: relative;
+            height: 180px;
+        }
+        
+        .banner-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .banner-slides {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .banner-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .banner-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+        }
+        
+        .banner-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .banner-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .banner-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+        
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator.active {
+            background: white;
+            width: 20px;
+            border-radius: 4px;
+        }
+        
+        .banner-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .banner-container:hover .banner-nav {
+            opacity: 1;
+        }
+        
+        .banner-nav.prev {
+            left: 10px;
+        }
+        
+        .banner-nav.next {
+            right: 10px;
+        }
+        
+        .banner-nav i {
+            color: var(--dark);
+            font-size: 16px;
+        }
+        
+        /* 快捷入口 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 10px 15px;
+            gap: 15px;
+        }
+        
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+			text-decoration: none;
+        }
+        
+        .action-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .action-icon i {
+            font-size: 30px;
+            color: var(--primary);
+        }
+        
+        .action-text {
+            font-size: 13px;
+            color: var(--dark);
+        }
+		
+        
+        /* 热门培训 - 更新为可滑动样式 */
+        .section {
+            padding: 15px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            position: relative;
+            padding-left: 10px;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .more-link {
+            font-size: 13px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .more-link i {
+            margin-left: 3px;
+            font-size: 12px;
+        }
+        
+        /* 更新课程容器为横向滚动 */
+        .courses-scroll-container {
+            position: relative;
+            padding-bottom: 25px; /* 为指示器留出空间 */
+        }
+        
+        .courses-scroll {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            gap: 12px;
+            <!--padding-bottom: 10px;-->
+        }
+        
+        /* 隐藏滚动条 */
+        .courses-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .courses-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* 课程页面 - 每页4个卡片 */
+        .course-page {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            min-width: 100%;
+            padding: 2px;
+        }
+        
+        .course-card {
+            background: var(--white);
+            border-radius: 13px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-image {
+            height: 100px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .course-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+        
+        .course-content {
+            padding: 12px;
+        }
+        
+        .course-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 40px;
+            text-align: center;
+        }
+        
+        .course-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 8px;
+        }
+        
+        .course-price {
+            color: #ff5722;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        /* 导航指示器 */
+        .courses-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .courses-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ddd;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .courses-indicator.active {
+            background-color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        /* 导航按钮 */
+        .scroll-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .scroll-nav:hover {
+            opacity: 1;
+        }
+        
+        .scroll-nav.prev {
+            left: 5px;
+        }
+        
+        .scroll-nav.next {
+            right: 5px;
+        }
+        
+        .scroll-nav i {
+            color: var(--dark);
+            font-size: 16px;
+        }
+        
+        /* 招聘专区 */
+        .jobs-container {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .job-card {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+        
+        .job-card:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .job-card:last-child {
+            border-bottom: none;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .job-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .job-salary {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .job-company {
+            font-size: 13px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .job-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .job-tag {
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        /* 培训页面 */
+        .training-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .training-category {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .training-category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .training-header {
+            padding: 15px;
+            background: linear-gradient(to right, var(--primary), #64b5f6);
+            color: white;
+            text-align: center;
+        }
+        
+        .training-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .training-count {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .training-courses {
+            padding: 10px;
+        }
+        
+        .training-course {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .training-course:last-child {
+            border-bottom: none;
+        }
+        
+        .course-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .course-icon i {
+            color: var(--primary);
+        }
+        
+        .course-name {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        /* 招聘页面 */
+        .jobs-page-container {
+            padding: 15px;
+        }
+        
+        .job-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .filter-btn {
+            background: var(--white);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .job-list {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .job-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+        
+        .job-item:last-child {
+            border-bottom: none;
+        }
+        
+        .job-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(to bottom right, #64b5f6, #1e88e5);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .job-details {
+            flex: 1;
+        }
+        
+        .job-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .job-company-info {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .job-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .job-salary-info {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .job-location {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+        }
+        
+        .job-location i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            z-index: 1000;
+            padding: 8px 0;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 3px;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+        
+        .nav-badge {
+            position: absolute;
+            top: 5px;
+            right: 30%;
+            background: #ff5252;
+            color: white;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .course-page {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .course-page {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .scroll-nav {
+                display: none;
+            }
+            
+            .training-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 新增："我的"页面样式 */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1E88E5, #0D47A1);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 30px;
+            color: var(--primary);
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .profile-level {
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .my-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin: 0 15px 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 0 15px 20px;
+        }
+        
+        .function-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 15px 5px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .function-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .function-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .function-name {
+            font-size: 13px;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff5252;
+            color: white;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .function-group {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin: 0 15px 20px;
+            overflow: hidden;
+        }
+        
+        .function-row {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .function-row:last-child {
+            border-bottom: none;
+        }
+        
+        .row-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .row-text {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .row-arrow {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            display: block;
+            width: calc(100% - 30px);
+            margin: 20px 15px;
+            padding: 15px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #f44336;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #ffebee;
+        }
+		
+		
+		
+		
+		
+		
+		
+		/* 新增：筛选栏样式 */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            
+            padding: 10px 5px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .filter-item {
+            position: relative;
+        }
+        
+        .filter-btn {
+            background: var(--white);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-btn i {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-btn.active i {
+            transform: rotate(180deg);
+        }
+        
+        .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 5px;
+        }
+        
+        .filter-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .filter-option {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .filter-option:last-child {
+            border-bottom: none;
+        }
+        
+        .filter-option:hover {
+            background: #f5f5f5;
+        }
+        
+        .filter-option.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* 新增：筛选结果统计 */
+        .filter-results {
+            padding: 0 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .clear-filters {
+            color: var(--primary);
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>广州</span>
+        </div>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="搜索培训课程或职位">
+        </div>
+        <div class="user-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
+
+    <!-- 首页 -->
+    <div id="home-page" class="page active">
+        <!-- 更新Banner区域为轮播图 -->
+        <div class="banner">
+            <div class="banner-container">
+                <div class="banner-slides" id="bannerSlides">
+                    <div class="banner-slide" style="background-image: url('https://www.sinosportsunion.com/resources/attachment/2023/12/1182693040918368257/1182693040922562561.png');">
+                       
+                    </div>
+                    <div class="banner-slide" style="background-image: url('https://www.sinosportsunion.com/resources/attachment/2025/08/1409864649914060802/1409864649918255105.png');">
+                        
+                    </div>
+                    <div class="banner-slide" style="background-image: url('https://www.sinosportsunion.com/resources/attachment/2023/12/1187707439231930369/1187707439244513281.png');">
+                        <div class="banner-content">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="banner-nav prev" id="bannerPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="banner-nav next" id="bannerNext">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                
+                <div class="banner-indicators" id="bannerIndicators">
+                    <div class="indicator active" data-index="0"></div>
+                    <div class="indicator" data-index="1"></div>
+                    <div class="indicator" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷入口 -->
+        <div class="quick-actions">
+			<a href="https://m.sinosportsunion.com/tabs/activity-profession" class="action-item">
+				<div class="action-item" >
+					<div class="action-icon">
+                    <i class="fas fa-graduation-cap"></i>
+					</div>
+					<div class="action-text">培训课程 </div>
+				</div>
+			</a>
+			<a href="https://m.sinosportsunion.com/jobs-list" class="action-item">
+            <div class="action-item">
+                <div class="action-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="action-text">招聘求职</div>
+            </div>
+			</a>
+			<a href="https://m.sinosportsunion.com/exercise-detail?exerciseId=1238903797523288066" class="action-item">
+            <div class="action-item">
+                <div class="action-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="action-text">刷题训练</div>
+            </div>
+			</a>
+			<a href="https://m.sinosportsunion.com/appraisal-cert-search" class="action-item">
+            <div class="action-item">
+                <div class="action-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="action-text">证书查询</div>
+            </div>
+			</a>
+        </div>
+
+        <!-- 热门培训 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">热门培训</div>
+                <a href="https://m.sinosportsunion.com/training-list" class="more-link">更多 <i class="fas fa-angle-right"></i></a>
+            </div>
+            <div class="courses-scroll-container">
+                <div class="scroll-nav prev">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="scroll-nav next">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                
+                <div class="courses-scroll" id="coursesScroll">
+                    <!-- 第1页 -->
+                    <div class="course-page">
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+							<div class="course-card">
+								<div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=t36Q7mOFSruf&format=png&color=000000');">
+									</div>
+								<div class="course-content">
+									<div class="course-title">游泳</div>
+								</div>
+							</div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=63951&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">游泳救生员</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=o4OuVcqGdT4U&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">攀岩</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=31911&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">潜水</div>
+                            </div>
+                        </div>
+						</a>
+                    </div>
+                    
+                    <!-- 第2页 -->
+                    <div class="course-page">
+					<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=2ZP3nwckax4G&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">滑雪（单板）</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=oqrXK826OcgX&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">滑雪（双板）</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=EWeDi5eG68mX&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">青少年体能训练指导</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=16971&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">健身教练</div>
+                            </div>
+                        </div>
+						</a>
+                    </div>
+                    
+                    <!-- 第3页 -->
+                    <div class="course-page">
+					
+					<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=8wtLSGexRTOc&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">普拉提</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=wSz1p7qE7UBw&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">健身瑜伽</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=114903&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">运动防护</div>
+                            </div>
+                        </div>
+						</a>
+						<a href="https://m.sinosportsunion.com/training-list" class="course-card">
+                        <div class="course-card">
+                            <div class="course-image" style="background-image: url('https://img.icons8.com/?size=100&id=14854&format=png&color=000000');">
+                            </div>
+                            <div class="course-content">
+                                <div class="course-title">运动康复</div>
+                            </div>
+                        </div>
+						</a>
+                    </div>
+                </div>
+                
+                <!--<div class="courses-indicators" id="coursesIndicators">
+                    <div class="courses-indicator active" data-index="0"></div>
+                    <div class="courses-indicator" data-index="1"></div>
+                    <div class="courses-indicator" data-index="2"></div>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- 招聘专区 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">最新职位</div>
+                <a href="#" class="more-link">更多 <i class="fas fa-angle-right"></i></a>
+            </div>
+            <div class="jobs-container">
+                <div class="job-card">
+					<a href="https://m.sinosportsunion.com/job-detail?jobId=1377597192033931266">
+						<div class="job-header">
+							<div class="job-title">篮球主教练</div>
+							<div class="job-salary">¥15K-25K</div>
+						</div>
+						<div class="job-company">广州星锐体育俱乐部</div>
+						<div class="job-tags">
+							<div class="job-tag">五险一金</div>
+							<div class="job-tag">带薪年假</div>
+							<div class="job-tag">专业培训</div>
+						</div>
+					</a>
+                </div>
+				
+                <div class="job-card">
+				<a href="https://m.sinosportsunion.com/job-detail?jobId=1377597192033931266">
+                    <div class="job-header">
+                        <div class="job-title">游泳教练主管</div>
+                        <div class="job-salary">¥18K-30K</div>
+                    </div>
+                    <div class="job-company">深圳海洋运动中心</div>
+                    <div class="job-tags">
+                        <div class="job-tag">包吃住</div>
+                        <div class="job-tag">年度体检</div>
+                        <div class="job-tag">团队活动</div>
+                    </div>
+					</a>
+                </div>
+                <div class="job-card">
+				<a href="https://m.sinosportsunion.com/job-detail?jobId=1377597192033931266">
+                    <div class="job-header">
+                        <div class="job-title">健身教练</div>
+                        <div class="job-salary">¥8K-15K</div>
+                    </div>
+                    <div class="job-company">佛山力健健身中心</div>
+                    <div class="job-tags">
+                        <div class="job-tag">高提成</div>
+                        <div class="job-tag">专业培训</div>
+                        <div class="job-tag">晋升空间</div>
+                    </div>
+					</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 培训页面 -->
+    <div id="training-page" class="page">
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">培训课程</div>
+                <div class="more-link">全部课程 <i class="fas fa-angle-right"></i></div>
+            </div>
+			
+			<!-- 新增：筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <div class="filter-btn" id="typeFilterBtn">
+                        <span>类型</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="filter-dropdown" id="typeFilter">
+                        <div class="filter-option active" data-value="all">全部类型</div>
+                        <div class="filter-option" data-value="lifeguard">救生员</div>
+                        <div class="filter-option" data-value="fitness">健身教练</div>
+                        <div class="filter-option" data-value="swimming">游泳</div>
+                        <div class="filter-option" data-value="yoga">瑜伽</div>
+                        <div class="filter-option" data-value="rehabilitation">康复</div>
+                    </div>
+                </div>
+                
+                <div class="filter-item">
+                    <div class="filter-btn" id="locationFilterBtn">
+                        <span>地区</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="filter-dropdown" id="locationFilter">
+                        <div class="filter-option active" data-value="all">地区</div>
+                        <div class="filter-option" data-value="guangzhou">广州</div>
+                        <div class="filter-option" data-value="shenzhen">深圳</div>
+                        <div class="filter-option" data-value="foshan">佛山</div>
+                        <div class="filter-option" data-value="dongguan">东莞</div>
+                        <div class="filter-option" data-value="zhuhai">珠海</div>
+                    </div>
+                </div>
+                
+                <div class="filter-item">
+                    <div class="filter-btn" id="priceFilterBtn">
+                        <span>价格</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="filter-dropdown" id="priceFilter">
+                        <div class="filter-option active" data-value="all">价格</div>
+                        <div class="filter-option" data-value="free">免费</div>
+                        <div class="filter-option" data-value="0-500">0-500元</div>
+                        <div class="filter-option" data-value="500-1000">500-1000元</div>
+                        <div class="filter-option" data-value="1000-2000">1000-2000元</div>
+                        <div class="filter-option" data-value="2000+">2000元以上</div>
+                    </div>
+                </div>
+                
+                <div class="filter-item">
+                    <div class="filter-btn" id="timeFilterBtn">
+                        <span>月份</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="filter-dropdown" id="timeFilter">
+                        <div class="filter-option active" data-value="all">月份</div>
+                        <div class="filter-option" data-value="weekend">1</div>
+                        <div class="filter-option" data-value="weekday">2</div>
+                        <div class="filter-option" data-value="recent">2</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 新增：筛选结果统计 -->
+            <div class="filter-results">
+                共找到 <span id="resultCount">12</span> 个培训课程
+                <span class="clear-filters" id="clearFilters">清除筛选</span>
+            </div>
+            
+            <div class="training-container">
+                <div class="training-category">
+                    <div class="training-header">
+                        <div class="training-title">救生员培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-swimmer"></i>
+                            </div>
+                            <div class="course-name">救生员培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">救生员鉴定批次</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="training-category">
+                    <div class="training-header" style="background:linear-gradient(to right, #4CAF50, #81C784);">
+                        <div class="training-title">健身培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <div class="course-name">健身教练培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <div class="course-name">健身教练测评批次</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="training-category">
+                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
+                        <div class="training-title">游泳培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-basketball-ball"></i>
+                            </div>
+                            <div class="course-name">游泳培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-table-tennis"></i>
+                            </div>
+                            <div class="course-name">游泳鉴定</div>
+                        </div>
+                    </div>
+                </div>
+				<div class="training-category">
+                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
+                        <div class="training-title">游泳培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-basketball-ball"></i>
+                            </div>
+                            <div class="course-name">游泳培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-table-tennis"></i>
+                            </div>
+                            <div class="course-name">游泳鉴定</div>
+                        </div>
+                    </div>
+                </div>
+				<div class="training-category">
+                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
+                        <div class="training-title">游泳培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-basketball-ball"></i>
+                            </div>
+                            <div class="course-name">游泳培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-table-tennis"></i>
+                            </div>
+                            <div class="course-name">游泳鉴定</div>
+                        </div>
+                    </div>
+                </div>
+				<div class="training-category">
+                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
+                        <div class="training-title">游泳培训</div>
+                    </div>
+                    <div class="training-courses">
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-basketball-ball"></i>
+                            </div>
+                            <div class="course-name">游泳培训班</div>
+                        </div>
+                        <div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-table-tennis"></i>
+                            </div>
+                            <div class="course-name">游泳鉴定</div>
+                        </div>
+                    </div>
+                </div>
+              
+            </div>
+        </div>
+        
+        
+    </div>
+
+    <!-- 招聘页面 -->
+    <div id="jobs-page" class="page">
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">招聘职位</div>
+                <div class="more-link"></div>
+            </div>
+            
+            <div class="jobs-page-container">
+                <div class="job-filters">
+                    <div class="filter-btn active">全部</div>
+                    <div class="filter-btn">游泳教练</div>
+                    <div class="filter-btn">健身教练</div>
+                    <div class="filter-btn">球类教练</div>
+                    <div class="filter-btn">瑜伽教练</div>
+                    <div class="filter-btn">管理岗位</div>
+                </div>
+				<div class="job-filters">
+                    <div class="filter-btn active">不限</div>
+                    <div class="filter-btn">高中及以下</div>
+                    <div class="filter-btn">大专</div>
+                    <div class="filter-btn">本科</div>
+                    <div class="filter-btn">硕士及以上</div>
+                </div>
+				<div class="job-filters">
+                    <div class="filter-btn active">不限</div>
+                    <div class="filter-btn">3K以下</div>
+                    <div class="filter-btn">3K-5K</div>
+                    <div class="filter-btn">5K-8K</div>
+                    <div class="filter-btn">8K-15K</div>
+                </div>
+				<div class="job-filters">
+                    <div class="filter-btn active">不限</div>
+                    <div class="filter-btn">广州</div>
+                    <div class="filter-btn">深圳</div>
+                    <div class="filter-btn">珠海</div>
+                    <div class="filter-btn">茂名</div>
+					<div class="filter-btn">佛山</div>
+                    <div class="filter-btn">茂名</div>
+                </div>
+                
+                <div class="job-list">
+                    <div class="job-item">
+                        <div class="job-logo">
+                            <i class="fas fa-swimming-pool"></i>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-name">高级游泳教练</div>
+                            <div class="job-company-info">广州奥体中心 · 3-5年经验 · 本科</div>
+                            <div class="job-meta">
+                                <div class="job-salary-info">¥15K-25K</div>
+                                <div class="job-location">
+                                    <i class="fas fa-map-marker-alt"></i> 广州天河
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-item">
+                        <div class="job-logo">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-name">健身教练主管</div>
+                            <div class="job-company-info">力健健身中心 · 5年以上经验 · 大专</div>
+                            <div class="job-meta">
+                                <div class="job-salary-info">¥18K-30K</div>
+                                <div class="job-location">
+                                    <i class="fas fa-map-marker-alt"></i> 深圳福田
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-item">
+                        <div class="job-logo">
+                            <i class="fas fa-basketball-ball"></i>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-name">篮球青训教练</div>
+                            <div class="job-company-info">星锐体育俱乐部 · 2年以上经验 · 大专</div>
+                            <div class="job-meta">
+                                <div class="job-salary-info">¥8K-15K</div>
+                                <div class="job-location">
+                                    <i class="fas fa-map-marker-alt"></i> 佛山南海
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-item">
+                        <div class="job-logo">
+                            <i class="fas fa-table-tennis"></i>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-name">乒乓球教练</div>
+                            <div class="job-company-info">全民健身中心 · 1年以上经验 · 不限学历</div>
+                            <div class="job-meta">
+                                <div class="job-salary-info">¥6K-10K</div>
+                                <div class="job-location">
+                                    <i class="fas fa-map-marker-alt"></i> 东莞
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-item">
+                        <div class="job-logo">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <div class="job-details">
+                            <div class="job-name">田径教练</div>
+                            <div class="job-company-info">市体育学校 · 3年以上经验 · 本科</div>
+                            <div class="job-meta">
+                                <div class="job-salary-info">¥10K-18K</div>
+                                <div class="job-location">
+                                    <i class="fas fa-map-marker-alt"></i> 广州
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">推荐企业</div>
+                <div class="more-link">更多企业 <i class="fas fa-angle-right"></i></div>
+            </div>
+            
+            <div class="jobs-container">
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="job-title">星锐体育俱乐部</div>
+                        <div class="job-salary">热招12个职位</div>
+                    </div>
+                    <div class="job-company">篮球、羽毛球、游泳培训</div>
+                    <div class="job-tags">
+                        <div class="job-tag">五险一金</div>
+                        <div class="job-tag">带薪年假</div>
+                        <div class="job-tag">晋升空间</div>
+                    </div>
+                </div>
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="job-title">海洋运动中心</div>
+                        <div class="job-salary">热招8个职位</div>
+                    </div>
+                    <div class="job-company">游泳、潜水、水上运动</div>
+                    <div class="job-tags">
+                        <div class="job-tag">包吃住</div>
+                        <div class="job-tag">年度旅游</div>
+                        <div class="job-tag">专业培训</div>
+                    </div>
+                </div>
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="job-title">力健健身中心</div>
+                        <div class="job-salary">热招15个职位</div>
+                    </div>
+                    <div class="job-company">健身、瑜伽、普拉提</div>
+                    <div class="job-tags">
+                        <div class="job-tag">高提成</div>
+                        <div class="job-tag">专业培训</div>
+                        <div class="job-tag">晋升空间</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：我的页面 -->
+    <div id="my-page" class="page">
+        <!-- 用户信息头部 -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">小新</div>
+            </div>
+        </div>
+        
+        <!-- 数据统计 -->
+        <div class="my-stats">
+            <div class="stat-item">
+			<a href="https://m.sinosportsunion.com/my-training-list">
+                <div class="stat-value">8</div>
+                <div class="stat-label">培训课程</div>
+				</a>
+            </div>
+            <div class="stat-item">
+			<a href="https://m.sinosportsunion.com/my-appraisal-plan-list">
+                <div class="stat-value">5</div>
+                <div class="stat-label">鉴定通过</div>
+				</a>
+            </div>
+            <div class="stat-item">
+			<a href="https://m.sinosportsunion.com/apply">
+                <div class="stat-value">12</div>
+                <div class="stat-label">应聘记录</div>
+				</a>
+            </div>
+            <div class="stat-item">
+			<a href="https://m.sinosportsunion.com/certificate-list">
+                <div class="stat-value">3</div>
+                <div class="stat-label">证书数量</div>
+				</a>
+            </div>
+        </div>
+        
+        <!-- 功能网格 -->
+        <div class="function-grid">
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/appraisal-score-search">
+                <div class="function-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="function-name">成绩查询</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/appraisal-cert-search">
+                <div class="function-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="function-name">证书查询</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/exercise-list?dataType=ME&targetId=1020986488629891074">
+                <div class="function-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="function-name">我的刷题</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/my-appraisal-plan-list">
+                <div class="function-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="function-name">我的鉴定</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/my-training-list">
+                <div class="function-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="function-name">我的培训</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/my-resume">
+                <div class="function-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="function-name">我的简历</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/apply">
+                <div class="function-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="function-name">我的应聘</div>
+				</a>
+            </div>
+            <div class="function-item">
+			<a href="https://m.sinosportsunion.com/help-feedback-save">
+                <div class="function-icon">
+                    <i class="fas fa-comment-alt"></i>
+                </div>
+                <div class="function-name">我的反馈</div>
+				</a>
+            </div>
+        </div>
+        
+        <!-- 设置和其他功能 -->
+        <div class="function-group">
+		<a href="https://m.sinosportsunion.com/setting">
+            <div class="function-row">
+			
+                <div class="row-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="row-text">设置</div>
+                <div class="row-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+				
+            </div>
+			</a>
+			<a href="https://m.sinosportsunion.com/setting">
+            <div class="function-row">
+			
+                <div class="row-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="row-text">账号安全</div>
+                <div class="row-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+				
+            </div>
+			</a>
+			<a href="https://m.sinosportsunion.com/about">
+            <div class="function-row">
+			
+                <div class="row-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="row-text">帮助中心</div>
+                <div class="row-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+				
+            </div>
+			</a>
+			<a href="https://m.sinosportsunion.com/about">
+            <div class="function-row">
+			
+                <div class="row-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="row-text">关于我们</div>
+                <div class="row-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+				
+            </div>
+			</a>
+        </div>
+        
+        <!-- 退出登录按钮 -->
+        <button class="logout-btn">退出登录</button>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="home-page">
+            <i class="fas fa-home nav-icon"></i>
+            <span>首页</span>
+        </div>
+        <div class="nav-item" data-page="training-page">
+            <i class="fas fa-graduation-cap nav-icon"></i>
+            <span>培训</span>
+        </div>
+        <div class="nav-item" data-page="jobs-page">
+            <i class="fas fa-briefcase nav-icon"></i>
+            <span>招聘</span>
+        </div>
+        <div class="nav-item" data-page="my-page">
+            <i class="fas fa-user nav-icon"></i>
+            <span>我的</span>
+            <span class="nav-badge">3</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+			// Banner轮播功能
+            function initBannerCarousel() {
+            const bannerSlides = document.getElementById('bannerSlides');
+            const bannerIndicators = document.querySelectorAll('#bannerIndicators .indicator');
+            const bannerPrev = document.getElementById('bannerPrev');
+            const bannerNext = document.getElementById('bannerNext');
+            
+            if (!bannerSlides || bannerIndicators.length === 0) {
+                console.error('Banner elements not found');
+                return;
+            }
+            
+            let currentBannerIndex = 0;
+            const bannerCount = bannerIndicators.length;
+            let bannerInterval;
+            
+            // 更新Banner指示器状态
+            function updateBannerIndicators() {
+                bannerIndicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentBannerIndex);
+                });
+            }
+            
+            // 切换到指定Banner
+            function goToBanner(index) {
+                currentBannerIndex = index;
+                if (bannerSlides) {
+                    bannerSlides.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+                }
+                updateBannerIndicators();
+            }
+            
+            // 下一张Banner
+            function nextBanner() {
+                currentBannerIndex = (currentBannerIndex + 1) % bannerCount;
+                goToBanner(currentBannerIndex);
+            }
+            
+            // 上一张Banner
+            function prevBanner() {
+                currentBannerIndex = (currentBannerIndex - 1 + bannerCount) % bannerCount;
+                goToBanner(currentBannerIndex);
+            }
+            
+            // 启动自动轮播
+            function startBannerAutoPlay() {
+                stopBannerAutoPlay();
+                bannerInterval = setInterval(nextBanner, 4000);
+            }
+            
+            // 停止自动轮播
+            function stopBannerAutoPlay() {
+                if (bannerInterval) {
+                    clearInterval(bannerInterval);
+                }
+            }
+            
+            // 添加事件监听
+            if (bannerPrev) {
+                bannerPrev.addEventListener('click', function() {
+                    stopBannerAutoPlay();
+                    prevBanner();
+                    startBannerAutoPlay();
+                });
+            }
+            
+            if (bannerNext) {
+                bannerNext.addEventListener('click', function() {
+                    stopBannerAutoPlay();
+                    nextBanner();
+                    startBannerAutoPlay();
+                });
+            }
+            
+            // 指示器点击事件
+            bannerIndicators.forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    stopBannerAutoPlay();
+                    const index = parseInt(this.getAttribute('data-index'));
+                    goToBanner(index);
+                    startBannerAutoPlay();
+                });
+            });
+            
+            // 鼠标悬停时暂停轮播
+            const bannerContainer = document.querySelector('.banner-container');
+            if (bannerContainer) {
+                bannerContainer.addEventListener('mouseenter', stopBannerAutoPlay);
+                bannerContainer.addEventListener('mouseleave', startBannerAutoPlay);
+                
+                // 触摸滑动支持
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                bannerContainer.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    stopBannerAutoPlay();
+                });
+                
+                bannerContainer.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleBannerSwipe();
+                    startBannerAutoPlay();
+                });
+                
+                function handleBannerSwipe() {
+                    const diff = touchStartX - touchEndX;
+                    const swipeThreshold = 50;
+                    
+                    if (diff > swipeThreshold) {
+                        nextBanner();
+                    } else if (diff < -swipeThreshold) {
+                        prevBanner();
+                    }
+                }
+            }
+            
+            // 启动自动轮播
+            startBannerAutoPlay();
+        }
+        
+        // 初始化Banner轮播
+        initBannerCarousel();
+		
+            // 页面导航功能
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = document.querySelectorAll('.page');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    // 更新导航激活状态
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 显示目标页面
+                    if (targetPage) {
+                        pages.forEach(page => page.classList.remove('active'));
+                        document.getElementById(targetPage).classList.add('active');
+                        
+                        // 滚动到顶部
+                        window.scrollTo(0, 0);
+                    }
+                });
+            });
+            
+            // 卡片悬停效果
+            const cards = document.querySelectorAll('.course-card, .job-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    this.style.boxShadow = '0 1px 4px rgba(0,0,0,0.1)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                    }, 150);
+                });
+            });
+            
+            // 轮播指示器切换
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', function() {
+                    indicators.forEach(ind => ind.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // 热门培训滑动功能
+            const coursesScroll = document.getElementById('coursesScroll');
+            const coursesIndicators = document.querySelectorAll('.courses-indicator');
+            const prevBtn = document.querySelector('.scroll-nav.prev');
+            const nextBtn = document.querySelector('.scroll-nav.next');
+            
+            // 当前页索引
+            let currentPage = 0;
+            const totalPages = document.querySelectorAll('.course-page').length;
+            
+            // 更新指示器状态
+            function updateIndicators() {
+                coursesIndicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentPage);
+                });
+            }
+            
+            // 滚动到指定页
+            function scrollToPage(pageIndex) {
+                currentPage = pageIndex;
+                const pageWidth = coursesScroll.offsetWidth;
+                coursesScroll.scrollTo({
+                    left: pageIndex * pageWidth,
+                    behavior: 'smooth'
+                });
+                updateIndicators();
+            }
+            
+            // 下一页
+            function nextPage() {
+                if (currentPage < totalPages - 1) {
+                    scrollToPage(currentPage + 1);
+                }
+            }
+            
+            // 上一页
+            function prevPage() {
+                if (currentPage > 0) {
+                    scrollToPage(currentPage - 1);
+                }
+            }
+            
+            // 添加事件监听
+            prevBtn.addEventListener('click', prevPage);
+            nextBtn.addEventListener('click', nextPage);
+            
+            // 指示器点击事件
+            coursesIndicators.forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    const pageIndex = parseInt(this.getAttribute('data-index'));
+                    scrollToPage(pageIndex);
+                });
+            });
+            
+            // 添加触摸滑动支持
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            coursesScroll.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            coursesScroll.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const diff = touchStartX - touchEndX;
+                const swipeThreshold = 50; // 滑动阈值
+                
+                if (diff > swipeThreshold) {
+                    nextPage(); // 向左滑动
+                } else if (diff < -swipeThreshold) {
+                    prevPage(); // 向右滑动
+                }
+            }
+            
+            // 自动轮播
+            setInterval(() => {
+                if (currentPage < totalPages - 1) {
+                    nextPage();
+                } else {
+                    scrollToPage(0);
+                }
+            }, 5000);
+            
+            // 招聘页面筛选功能
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 在同一组内移除active
+                    const siblings = Array.from(this.parentElement.children);
+                    siblings.forEach(sibling => sibling.classList.remove('active'));
+                    
+                    // 添加active到当前元素
+                    this.classList.add('active');
+                });
+            });
+            
+            // 模拟小程序下拉刷新效果
+            let startY = 0;
+            document.addEventListener('touchstart', e => {
+                startY = e.touches[0].pageY;
+            });
+            
+            document.addEventListener('touchmove', e => {
+                const moveY = e.touches[0].pageY;
+                const diff = moveY - startY;
+                
+                if (diff > 50 && window.scrollY <= 0) {
+                    // 显示下拉刷新效果
+                    document.body.style.transform = `translateY(${diff}px)`;
+                }
+            });
+            
+            document.addEventListener('touchend', e => {
+                document.body.style.transform = '';
+            });
+			
+			
+			// 修复：筛选功能
+            const filterButtons = document.querySelectorAll('.filter-item > .filter-btn');
+            const filterDropdowns = document.querySelectorAll('.filter-dropdown');
+            
+            // 点击筛选按钮显示/隐藏下拉菜单
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // 获取对应的下拉菜单
+                    const dropdown = this.nextElementSibling;
+                    
+                    // 隐藏所有其他下拉菜单
+                    filterDropdowns.forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('show');
+                            // 重置其他按钮的active状态
+                            const otherBtn = d.previousElementSibling;
+                            if (otherBtn !== this) {
+                                otherBtn.classList.remove('active');
+                            }
+                        }
+                    });
+                    
+                    // 切换当前下拉菜单
+                    dropdown.classList.toggle('show');
+                    this.classList.toggle('active');
+                });
+            });
+            
+            // 点击筛选选项
+            const filterOptions = document.querySelectorAll('.filter-option');
+            filterOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const filterType = this.parentElement.id;
+                    const filterValue = this.getAttribute('data-value');
+                    
+                    // 更新按钮文本
+                    const button = this.parentElement.previousElementSibling;
+                    button.querySelector('span').textContent = this.textContent;
+                    
+                    // 添加active类
+                    this.parentElement.querySelectorAll('.filter-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 隐藏下拉菜单
+                    this.parentElement.classList.remove('show');
+                    button.classList.remove('active');
+                    
+                    // 应用筛选
+                    applyFilters();
+                });
+            });
+            
+            // 点击其他地方关闭所有下拉菜单
+            document.addEventListener('click', function() {
+                filterDropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+                filterButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+            });
+            
+            // 阻止下拉菜单点击事件冒泡
+            filterDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+            
+            // 清除所有筛选
+            const clearFiltersBtn = document.getElementById('clearFilters');
+            const resultCount = document.getElementById('resultCount');
+            
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function() {
+                    // 重置筛选状态
+                    const currentFilters = {
+                        type: 'all',
+                        location: 'all',
+                        price: 'all',
+                        time: 'all'
+                    };
+                    
+                    // 重置按钮文本
+                    const filterItems = document.querySelectorAll('.filter-item');
+                    filterItems.forEach(item => {
+                        const button = item.querySelector('.filter-btn');
+                        const defaultOption = item.querySelector('.filter-option[data-value="all"]');
+                        if (defaultOption) {
+                            button.querySelector('span').textContent = defaultOption.textContent;
+                            
+                            // 重置选项激活状态
+                            item.querySelectorAll('.filter-option').forEach(option => {
+                                option.classList.remove('active');
+                            });
+                            defaultOption.classList.add('active');
+                        }
+                    });
+                    
+                    // 应用筛选
+                    applyFilters();
+                });
+            }
+            
+            // 应用筛选函数
+            function applyFilters() {
+                // 这里应该是实际的筛选逻辑
+                // 由于是静态页面，我们模拟筛选效果
+                
+                // 模拟筛选结果计数
+                const randomCount = Math.floor(Math.random() * 5) + 8;
+                if (resultCount) {
+                    resultCount.textContent = randomCount;
+                }
+                
+                // 在实际应用中，这里应该发送请求到服务器或筛选本地数据
+                console.log('应用筛选');
+                
+                // 可以添加视觉反馈，比如显示加载效果然后更新内容
+                const trainingContainer = document.querySelector('.training-container');
+                if (trainingContainer) {
+                    trainingContainer.style.opacity = '0.5';
+                    
+                    setTimeout(() => {
+                        trainingContainer.style.opacity = '1';
+                        // 这里应该更新显示的内容
+                    }, 300);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
