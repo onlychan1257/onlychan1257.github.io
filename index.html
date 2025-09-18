@@ -115,6 +115,116 @@
             margin-left: 12px;
             font-size: 16px;
         }
+		
+		/* 修改用户头像为分类图标 */
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1001;
+        }
+        
+        /* 分类下拉菜单 */
+        .category-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 15px;
+            width: 80%;
+            max-width: 300px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            overflow: hidden;
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .category-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .category-header {
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-button {
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .back-button.show {
+            display: block;
+        }
+        
+        .category-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .category-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s ease;
+        }
+        
+        .category-item:last-child {
+            border-bottom: none;
+        }
+        
+        .category-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .category-item i {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* 遮罩层 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+		
+		
+		
+		
+		
+		
+		
+		
         
         /* 更新Banner区域为轮播图样式 */
         .banner {
@@ -467,6 +577,180 @@
         }
         
         /* 招聘专区 */
+		/* 筛选栏样式 */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px 5px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .filter-item {
+            position: relative;
+        }
+        
+        .filter-btn {
+            background: var(--white);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .filter-btn i {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .filter-btn.active i {
+            transform: rotate(180deg);
+        }
+        
+        .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 5px;
+        }
+        
+        .filter-dropdown.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .filter-option {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .filter-option:last-child {
+            border-bottom: none;
+        }
+        
+        .filter-option:hover {
+            background: #f5f5f5;
+        }
+        
+        .filter-option.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* 筛选结果统计 */
+        .filter-results {
+            padding: 0 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .clear-filters {
+            color: var(--primary);
+            margin-left: 10px;
+            cursor: pointer;
+        }
+		 /* 招聘页面样式 */
+        .jobs-page-container {
+            padding: 15px;
+        }
+        
+        .job-list {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .job-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+        
+        .job-item:last-child {
+            border-bottom: none;
+        }
+        
+        .job-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(to bottom right, #64b5f6, #1e88e5);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .job-details {
+            flex: 1;
+        }
+        
+        .job-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .job-company-info {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .job-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .job-salary-info {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+        
+        .job-location {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+        }
+        
+        .job-location i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+		
+		
+		
+		
         .jobs-container {
             background: var(--white);
             border-radius: 12px;
@@ -545,7 +829,7 @@
         }
         
         .training-header {
-            padding: 15px;
+            padding: 1px;
             background: linear-gradient(to right, var(--primary), #64b5f6);
             color: white;
             text-align: center;
@@ -554,7 +838,6 @@
         .training-title {
             font-size: 16px;
             font-weight: 700;
-            margin-bottom: 5px;
         }
         
         .training-count {
@@ -563,13 +846,13 @@
         }
         
         .training-courses {
-            padding: 10px;
+            padding: 2px;
         }
         
         .training-course {
             display: flex;
             align-items: center;
-            padding: 8px 0;
+            padding: 1px 0;
             border-bottom: 1px solid #eee;
         }
         
@@ -1070,6 +1353,9 @@
     </style>
 </head>
 <body>
+
+<!-- 遮罩层 -->
+    <div class="overlay" id="overlay"></div>
     <!-- 顶部导航 -->
     <div class="top-nav">
         <div class="location">
@@ -1080,8 +1366,27 @@
             <i class="fas fa-search"></i>
             <input type="text" placeholder="搜索培训课程或职位">
         </div>
-        <div class="user-avatar">
+        <!--<div class="user-avatar">
             <i class="fas fa-user"></i>
+        </div> -->
+		
+		<!-- 将用户头像替换为分类图标 -->
+        <div class="category-icon" id="categoryIcon">
+            <i class="fas fa-list"></i>
+        </div>
+        
+        <!-- 分类下拉菜单 -->
+        <div class="category-dropdown" id="categoryDropdown">
+            <div class="category-header">
+                <div class="back-button" id="backButton">
+                    <i class="fas fa-arrow-left"></i> 返回
+                </div>
+                <div id="categoryTitle">培训分类</div>
+                <div></div> <!-- 占位用于布局 -->
+            </div>
+            <div class="category-list" id="categoryList">
+                <!-- 大类将通过JS动态添加 -->
+            </div>
         </div>
     </div>
 
@@ -1380,7 +1685,7 @@
                 
                 <div class="filter-item">
                     <div class="filter-btn" id="locationFilterBtn">
-                        <span>地区</span>
+                        <span>根据定位</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="filter-dropdown" id="locationFilter">
@@ -1438,13 +1743,31 @@
                             <div class="course-icon">
                                 <i class="fas fa-swimmer"></i>
                             </div>
-                            <div class="course-name">救生员培训班</div>
+                            <div class="course-name">20250915五级游泳救生员（广州国体联）</div>
                         </div>
                         <div class="training-course">
                             <div class="course-icon">
                                 <i class="fas fa-life-ring"></i>
                             </div>
-                            <div class="course-name">救生员鉴定批次</div>
+                            <div class="course-name">培训费用：xxxx元</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训日期：2025-09-15 - 2025-09-20</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训场馆：广州游泳馆</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">联系方式：12345678910（x先生/小姐）</div>
                         </div>
                     </div>
                 </div>
@@ -1456,35 +1779,71 @@
                     <div class="training-courses">
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-dumbbell"></i>
+                                <i class="fas fa-swimmer"></i>
                             </div>
-                            <div class="course-name">健身教练培训班</div>
+                            <div class="course-name">20250915初级健身教练（广州国体联）</div>
                         </div>
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-apple-alt"></i>
+                                <i class="fas fa-life-ring"></i>
                             </div>
-                            <div class="course-name">健身教练测评批次</div>
+                            <div class="course-name">培训费用：xxxx元</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训日期：2025-09-15 - 2025-09-20</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训场馆：广州健身馆</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">联系方式：12345678910（x先生/小姐）</div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="training-category">
                     <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
-                        <div class="training-title">游泳培训</div>
+                        <div class="training-title">滑雪培训</div>
                     </div>
                     <div class="training-courses">
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-basketball-ball"></i>
+                                <i class="fas fa-swimmer"></i>
                             </div>
-                            <div class="course-name">游泳培训班</div>
+                            <div class="course-name">20250915五级滑雪（单板）指导员（广州国体联）</div>
                         </div>
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-table-tennis"></i>
+                                <i class="fas fa-life-ring"></i>
                             </div>
-                            <div class="course-name">游泳鉴定</div>
+                            <div class="course-name">培训费用：xxxx元</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训日期：2025-09-15 - 2025-09-20</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训场馆：广州融创滑雪馆</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">联系方式：12345678910（x先生/小姐）</div>
                         </div>
                     </div>
                 </div>
@@ -1495,56 +1854,37 @@
                     <div class="training-courses">
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-basketball-ball"></i>
+                                <i class="fas fa-swimmer"></i>
                             </div>
-                            <div class="course-name">游泳培训班</div>
+                            <div class="course-name">20250915五级游泳救生员（广州国体联）</div>
                         </div>
                         <div class="training-course">
                             <div class="course-icon">
-                                <i class="fas fa-table-tennis"></i>
+                                <i class="fas fa-life-ring"></i>
                             </div>
-                            <div class="course-name">游泳鉴定</div>
+                            <div class="course-name">培训费用：xxxx元</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训日期：2025-09-15 - 2025-09-20</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">培训场馆：广州游泳馆</div>
+                        </div>
+						<div class="training-course">
+                            <div class="course-icon">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div class="course-name">联系方式：12345678910（x先生/小姐）</div>
                         </div>
                     </div>
                 </div>
-				<div class="training-category">
-                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
-                        <div class="training-title">游泳培训</div>
-                    </div>
-                    <div class="training-courses">
-                        <div class="training-course">
-                            <div class="course-icon">
-                                <i class="fas fa-basketball-ball"></i>
-                            </div>
-                            <div class="course-name">游泳培训班</div>
-                        </div>
-                        <div class="training-course">
-                            <div class="course-icon">
-                                <i class="fas fa-table-tennis"></i>
-                            </div>
-                            <div class="course-name">游泳鉴定</div>
-                        </div>
-                    </div>
-                </div>
-				<div class="training-category">
-                    <div class="training-header" style="background:linear-gradient(to right, #FF9800, #FFB74D);">
-                        <div class="training-title">游泳培训</div>
-                    </div>
-                    <div class="training-courses">
-                        <div class="training-course">
-                            <div class="course-icon">
-                                <i class="fas fa-basketball-ball"></i>
-                            </div>
-                            <div class="course-name">游泳培训班</div>
-                        </div>
-                        <div class="training-course">
-                            <div class="course-icon">
-                                <i class="fas fa-table-tennis"></i>
-                            </div>
-                            <div class="course-name">游泳鉴定</div>
-                        </div>
-                    </div>
-                </div>
+				
               
             </div>
         </div>
@@ -1557,40 +1897,78 @@
         <div class="section">
             <div class="section-header">
                 <div class="section-title">招聘职位</div>
-                <div class="more-link"></div>
+				
+				<div class="more-link">推荐   最新</div>
             </div>
             
             <div class="jobs-page-container">
-                <div class="job-filters">
-                    <div class="filter-btn active">全部</div>
-                    <div class="filter-btn">游泳教练</div>
-                    <div class="filter-btn">健身教练</div>
-                    <div class="filter-btn">球类教练</div>
-                    <div class="filter-btn">瑜伽教练</div>
-                    <div class="filter-btn">管理岗位</div>
+                <!-- 修改后的筛选栏 -->
+                <div class="filter-bar">
+                    
+                    
+                    <div class="filter-item">
+                        <div class="filter-btn" id="jobTypeFilterBtn">
+                            <span>职位</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-dropdown" id="jobTypeFilter">
+                            <div class="filter-option active" data-value="all">全部</div>
+                            <div class="filter-option" data-value="swimming">游泳教练</div>
+                            <div class="filter-option" data-value="fitness">健身教练</div>
+                            <div class="filter-option" data-value="ball">球类教练</div>
+                            <div class="filter-option" data-value="yoga">瑜伽教练</div>
+                            <div class="filter-option" data-value="management">管理岗位</div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-item">
+                        <div class="filter-btn" id="educationFilterBtn">
+                            <span>学历</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-dropdown" id="educationFilter">
+                            <div class="filter-option active" data-value="all">不限</div>
+                            <div class="filter-option" data-value="high-school">高中及以下</div>
+                            <div class="filter-option" data-value="college">大专</div>
+                            <div class="filter-option" data-value="bachelor">本科</div>
+                            <div class="filter-option" data-value="master">硕士及以上</div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-item">
+                        <div class="filter-btn" id="salaryFilterBtn">
+                            <span>薪资</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-dropdown" id="salaryFilter">
+                            <div class="filter-option active" data-value="all">不限</div>
+                            <div class="filter-option" data-value="0-3">3K以下</div>
+                            <div class="filter-option" data-value="3-5">3K-5K</div>
+                            <div class="filter-option" data-value="5-8">5K-8K</div>
+                            <div class="filter-option" data-value="8-15">8K-15K</div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-item">
+                        <div class="filter-btn" id="locationFilterBtn">
+                            <span>地区</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-dropdown" id="locationFilter">
+                            <div class="filter-option active" data-value="all">不限</div>
+                            <div class="filter-option" data-value="guangzhou">广州</div>
+                            <div class="filter-option" data-value="shenzhen">深圳</div>
+                            <div class="filter-option" data-value="zhuhai">珠海</div>
+                            <div class="filter-option" data-value="maoming">茂名</div>
+                            <div class="filter-option" data-value="foshan">佛山</div>
+                        </div>
+                    </div>
                 </div>
-				<div class="job-filters">
-                    <div class="filter-btn active">不限</div>
-                    <div class="filter-btn">高中及以下</div>
-                    <div class="filter-btn">大专</div>
-                    <div class="filter-btn">本科</div>
-                    <div class="filter-btn">硕士及以上</div>
-                </div>
-				<div class="job-filters">
-                    <div class="filter-btn active">不限</div>
-                    <div class="filter-btn">3K以下</div>
-                    <div class="filter-btn">3K-5K</div>
-                    <div class="filter-btn">5K-8K</div>
-                    <div class="filter-btn">8K-15K</div>
-                </div>
-				<div class="job-filters">
-                    <div class="filter-btn active">不限</div>
-                    <div class="filter-btn">广州</div>
-                    <div class="filter-btn">深圳</div>
-                    <div class="filter-btn">珠海</div>
-                    <div class="filter-btn">茂名</div>
-					<div class="filter-btn">佛山</div>
-                    <div class="filter-btn">茂名</div>
+                
+                <!-- 筛选结果统计 -->
+                <div class="filter-results">
+                    共找到 <span id="jobResultCount">28</span> 个职位
+                    <span class="clear-filters" id="clearJobFilters">清除筛选</span>
                 </div>
                 
                 <div class="job-list">
@@ -1722,6 +2100,8 @@
                 </div>
             </div>
         </div>
+        
+        
     </div>
 
     <!-- 新增：我的页面 -->
@@ -1915,6 +2295,138 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+		// 分类数据
+            const categories = [
+                {
+                    id: 'fitness',
+                    name: '能力测评',
+                    subcategories: [
+                        { id: 'fitness-coach', name: '健身教练' },
+                        { id: 'yoga', name: '瑜伽教练' },
+                        { id: 'pilates', name: '青少年体能训练指导' },
+                        { id: 'bodybuilding', name: '运动营养师' }
+                    ]
+                },
+                {
+                    id: 'swimming',
+                    name: '国职五项',
+                    subcategories: [
+                        { id: 'swimming-coach', name: '游泳社会指导员' },
+                        { id: 'lifeguard', name: '滑雪社会指导员' },
+                        { id: 'three', name: '潜水社会指导员' }
+                    ]
+                },
+                {
+                    id: 'other',
+                    name: '其他类别',
+                    subcategories: [
+                        { id: 'dance', name: '舞蹈教练' },
+                        { id: 'boxing', name: '拳击教练' },
+                        { id: 'rehabilitation', name: '运动康复' },
+                        { id: 'children', name: '少儿体能' }
+                    ]
+                }
+            ];
+
+            // 获取DOM元素
+            const categoryIcon = document.getElementById('categoryIcon');
+            const categoryDropdown = document.getElementById('categoryDropdown');
+            const categoryList = document.getElementById('categoryList');
+            const categoryTitle = document.getElementById('categoryTitle');
+            const backButton = document.getElementById('backButton');
+            const overlay = document.getElementById('overlay');
+            
+            let currentCategory = null;
+
+            // 显示分类下拉菜单
+            function showCategoryDropdown() {
+                categoryDropdown.classList.add('show');
+                overlay.classList.add('show');
+                renderMainCategories();
+            }
+
+            // 隐藏分类下拉菜单
+            function hideCategoryDropdown() {
+                categoryDropdown.classList.remove('show');
+                overlay.classList.remove('show');
+                currentCategory = null;
+            }
+
+            // 渲染主分类
+            function renderMainCategories() {
+                categoryList.innerHTML = '';
+                categoryTitle.textContent = '培训分类';
+                backButton.classList.remove('show');
+                
+                categories.forEach(category => {
+                    const item = document.createElement('div');
+                    item.className = 'category-item';
+                    item.innerHTML = `
+                        ${category.name}
+                        <i class="fas fa-chevron-right"></i>
+                    `;
+                    item.addEventListener('click', () => {
+                        showSubcategories(category);
+                    });
+                    categoryList.appendChild(item);
+                });
+            }
+
+            // 显示子分类
+            function showSubcategories(category) {
+                currentCategory = category;
+                categoryList.innerHTML = '';
+                categoryTitle.textContent = category.name;
+                backButton.classList.add('show');
+                
+                category.subcategories.forEach(subcategory => {
+                    const item = document.createElement('div');
+                    item.className = 'category-item';
+                    item.textContent = subcategory.name;
+                    item.addEventListener('click', () => {
+                        selectSubcategory(subcategory);
+                    });
+                    categoryList.appendChild(item);
+                });
+            }
+
+            // 选择子分类
+            function selectSubcategory(subcategory) {
+                // 这里可以添加跳转到对应分类页面的逻辑
+                console.log('选择了分类:', currentCategory.name, '-', subcategory.name);
+                hideCategoryDropdown();
+                
+                // 在实际应用中，这里可以跳转到对应的分类页面
+                // window.location.href = `/training-list?category=${subcategory.id}`;
+            }
+
+            // 事件监听
+            categoryIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                showCategoryDropdown();
+            });
+
+            backButton.addEventListener('click', function() {
+                renderMainCategories();
+            });
+
+            overlay.addEventListener('click', function() {
+                hideCategoryDropdown();
+            });
+
+            // 点击文档其他区域关闭下拉菜单
+            document.addEventListener('click', function(e) {
+                if (!categoryDropdown.contains(e.target) && e.target !== categoryIcon) {
+                    hideCategoryDropdown();
+                }
+            });
+
+            // 阻止下拉菜单内部的点击事件冒泡
+            categoryDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+		
+		
 			// Banner轮播功能
             function initBannerCarousel() {
             const bannerSlides = document.getElementById('bannerSlides');
@@ -2338,6 +2850,10 @@
                     }, 300);
                 }
             }
+			
+			
+			
+			
         });
     </script>
 </body>
